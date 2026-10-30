@@ -1,4 +1,5 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? "";
+const electionOpen = document.querySelector(".voting-app")?.dataset.electionOpen === "true";
 const numberInput = document.querySelector("#numero-candidato");
 const lookupMessage = document.querySelector("#lookup-message");
 const candidateBrief = document.querySelector("#candidate-brief");
@@ -265,4 +266,51 @@ document.querySelector("#logout-form").addEventListener("submit", async (event) 
   showToast("Não foi possível encerrar a sessão. Tente novamente.");
 });
 
-loadCandidates();
+const endElectionButton = document.querySelector("#end-election-button");
+const closeElectionDialog = document.querySelector("#close-election-dialog");
+
+if (endElectionButton && closeElectionDialog) {
+  endElectionButton.addEventListener("click", () => closeElectionDialog.showModal());
+  document.querySelector("#cancel-close-election")?.addEventListener("click", () => closeElectionDialog.close());
+  document.querySelector("#confirm-close-election")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+
+    try {
+      const response = await fetch("/encerrar-eleicao", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "X-CSRF-Token": csrfToken,
+        },
+        body: JSON.stringify({}),
+      });
+      const data = await response.json().catch(() => null);
+
+      if (response.status === 401) {
+        window.location.replace("/login");
+        return;
+      }
+      if (!response.ok || !data?.sucesso) {
+        throw new Error(data?.erro || data?.mensagem || "Não foi possível encerrar a votação.");
+      }
+
+      window.location.assign("/resultado");
+    } catch (error) {
+      closeElectionDialog.close();
+      showToast(error instanceof Error ? error.message : "Não foi possível encerrar a votação.");
+    } finally {
+      button.disabled = false;
+      button.removeAttribute("aria-busy");
+    }
+  });
+}
+
+if (electionOpen) {
+  loadCandidates();
+} else {
+  setLookupMessage("A votação foi encerrada. Consulte o resultado da eleição.", "success");
+}

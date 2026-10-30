@@ -13,10 +13,16 @@ from services.vote_service import (
     fechar_eleicao,
     listar_candidatos,
     registrar_voto,
+    status_eleicao,
 )
 
 
 main_bp = Blueprint('main', __name__)
+
+
+@main_bp.get("/resultado")
+def resultado_page():
+    return render_template("resultados.html", results_available=not status_eleicao())
 
 
 @main_bp.app_context_processor
@@ -54,7 +60,7 @@ def home():
 def urna():
     if "matricula" not in session:
         return redirect(url_for("main.login"))
-    return render_template("urna.html")
+    return render_template("urna.html", election_open=status_eleicao())
 
 
 @main_bp.post("/logout")
@@ -176,12 +182,22 @@ def votar():
         return jsonify(resultado), 400    
 
 
-@main_bp.route('/resultados', methods=['GET'])
-def resultados():
+@main_bp.post("/encerrar-eleicao")
+def encerrar_eleicao():
+    if "matricula" not in session:
+        return jsonify({"erro": "Faça login para encerrar a votação."}), 401
 
+    if not status_eleicao():
+        return jsonify({"sucesso": True, "mensagem": "A votação já está encerrada."}), 200
 
     fechar_eleicao()
+    return jsonify({"sucesso": True, "mensagem": "Votação encerrada. A apuração está disponível."}), 200
 
+
+@main_bp.route('/resultados', methods=['GET'])
+def resultados():
+    if status_eleicao():
+        return jsonify({"erro": "A apuração será liberada após o encerramento da votação."}), 409
 
     apuracao = apurar_votos()
     return jsonify(apuracao), 200 

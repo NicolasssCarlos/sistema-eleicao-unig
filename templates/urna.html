@@ -4,13 +4,18 @@
 {% block description %}Simulação acadêmica do fluxo de votação com candidatos carregados pelo backend Flask.{% endblock %}
 
 {% block content %}
-<div class="voting-app">
+<div class="voting-app" data-election-open="{{ 'true' if election_open else 'false' }}">
   <header class="app-header">
     <a class="brand-lockup brand-lockup-dark" href="{{ url_for('main.urna') }}" aria-label="Voto Acadêmico, urna">
       <span class="brand-mark" aria-hidden="true">V</span>
       <span class="brand-name">VOTO <strong>ACADÊMICO</strong><small>ELEIÇÃO UNIVERSITÁRIA</small></span>
     </a>
     <div class="header-status"><span class="status-dot" aria-hidden="true"></span> Simulação acadêmica</div>
+    {% if election_open %}
+    <button id="end-election-button" class="close-election-button" type="button">Encerrar votação</button>
+    {% else %}
+    <a class="results-link" href="{{ url_for('main.resultado_page') }}">Ver resultado</a>
+    {% endif %}
     <form id="logout-form" action="{{ url_for('main.logout') }}" method="post">
       <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
       <button class="logout-button" type="submit">Encerrar sessão</button>
@@ -21,16 +26,32 @@
     <section class="page-heading" aria-labelledby="voting-title">
       <div>
         <p class="eyebrow">SIMULAÇÃO ACADÊMICA · NÃO OFICIAL</p>
+        {% if election_open %}
         <h1 id="voting-title">Escolha seu representante.</h1>
         <p class="page-intro">Digite o número do candidato, confira os dados na tela e confirme seu voto.</p>
+        {% else %}
+        <h1 id="voting-title">Votação encerrada.</h1>
+        <p class="page-intro">A apuração final já pode ser consultada.</p>
+        {% endif %}
       </div>
+      {% if election_open %}
       <div class="step-indicator" aria-label="Etapa 1 de 1">
         <span class="step-number">01</span>
         <span>VOTO PARA<br>REPRESENTANTE</span>
       </div>
+      {% endif %}
     </section>
 
-    <section id="voting-grid" class="voting-grid">
+    <section id="election-closed-banner" class="election-closed-banner" aria-labelledby="election-closed-title" {% if election_open %}hidden{% endif %}>
+      <div>
+        <p class="eyebrow">VOTAÇÃO FINALIZADA</p>
+        <h2 id="election-closed-title">A apuração está disponível.</h2>
+        <p>Consulte o resultado da eleição universitária.</p>
+      </div>
+      <a class="button-primary" href="{{ url_for('main.resultado_page') }}">Ver quem venceu</a>
+    </section>
+
+    <section id="voting-grid" class="voting-grid" {% if not election_open %}hidden{% endif %}>
       <section class="urna-card" aria-label="Painel da urna eletrônica simulada">
         <div class="urna-topbar">
           <span class="urna-label"><span class="display-led" aria-hidden="true"></span> URNA UNIVERSITÁRIA</span>
@@ -81,11 +102,9 @@
         </div>
 
         <div class="ballot-actions">
-          <button id="blank-vote" class="action-button action-blank" type="button" disabled aria-describedby="blank-vote-note">BRANCO</button>
           <button id="correct-number" class="action-button action-correct" type="button">CORRIGE</button>
           <button id="open-confirm" class="action-button action-confirm" type="button" disabled>CONFIRMA</button>
         </div>
-        <p id="blank-vote-note" class="blank-vote-note">O backend atual registra votos por candidato; voto em branco ainda não está disponível.</p>
       </section>
 
       <aside class="candidate-panel" aria-labelledby="candidate-list-title">
@@ -135,6 +154,20 @@
       </div>
     </div>
   </dialog>
+
+  {% if election_open %}
+  <dialog id="close-election-dialog" class="confirmation-dialog" aria-labelledby="close-election-title">
+    <div class="dialog-content">
+      <p class="eyebrow">ENCERRAR VOTAÇÃO</p>
+      <h2 id="close-election-title">Finalizar a eleição?</h2>
+      <p class="dialog-caption">Depois de encerrar, ninguém poderá votar e o resultado será liberado.</p>
+      <div class="dialog-actions">
+        <button id="cancel-close-election" class="button-secondary" type="button">Continuar votando</button>
+        <button id="confirm-close-election" class="button-primary" type="button">Encerrar votação</button>
+      </div>
+    </div>
+  </dialog>
+  {% endif %}
 
   <div id="vote-message" class="toast-message" role="status" aria-live="polite" hidden></div>
 </div>
