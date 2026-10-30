@@ -808,12 +808,6 @@ input:focus-visible {
   opacity: 0.55;
 }
 
-.action-blank {
-  border-color: #d6ddd5;
-  background: #f6f7f2;
-  color: var(--ink);
-}
-
 .action-correct {
   background: var(--orange);
   color: #20170b;
@@ -822,14 +816,6 @@ input:focus-visible {
 .action-confirm {
   background: var(--green);
   color: white;
-}
-
-.blank-vote-note {
-  margin: 0 20px 17px;
-  color: var(--muted);
-  font-size: 0.68rem;
-  line-height: 1.5;
-  text-align: right;
 }
 
 .candidate-panel {
@@ -1101,6 +1087,326 @@ input:focus-visible {
   font-size: 0.77rem;
 }
 
+.close-election-button,
+.results-link {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border: 1px solid #d8c38c;
+  border-radius: 9px;
+  background: #fffaf0;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 750;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.close-election-button:hover,
+.results-link:hover {
+  border-color: var(--gold);
+  background: #fff5df;
+}
+
+.election-closed-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 0 26px;
+  padding: 22px 26px;
+  border: 1px solid #c9ddce;
+  border-radius: 16px;
+  background: #eef5ef;
+}
+
+.election-closed-banner h2 {
+  margin: 5px 0;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.election-closed-banner p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.results-app {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(229 179 74 / 10%), transparent 25rem),
+    var(--paper);
+}
+
+.results-main {
+  width: min(980px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(42px, 7vw, 82px) 0 64px;
+}
+
+.results-hero {
+  max-width: 720px;
+  margin-bottom: 34px;
+}
+
+.results-hero h1 {
+  margin: 12px 0 10px;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.55rem, 5vw, 4.3rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 1.03;
+}
+
+.results-hero > p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.7;
+}
+
+.results-state {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 25px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.results-state-index {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 12px;
+  background: #eef5ef;
+  color: var(--green-deep);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-weight: 800;
+}
+
+.results-state h2 {
+  margin: 4px 0;
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+
+.results-state p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.results-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 20px 70px rgb(20 35 29 / 7%);
+}
+
+.winner-panel {
+  padding: clamp(26px, 5vw, 48px);
+  background: linear-gradient(125deg, var(--green-deep), var(--green));
+  color: white;
+}
+
+.winner-label,
+.winner-status {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.winner-label {
+  color: rgb(255 255 255 / 68%);
+}
+
+.winner-status {
+  margin-top: 31px;
+  color: #f2d88f;
+}
+
+.winner-panel h2 {
+  max-width: 760px;
+  margin: 9px 0 7px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 5vw, 3.45rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.winner-meta {
+  margin: 0;
+  color: rgb(255 255 255 / 78%);
+  font-size: 0.9rem;
+}
+
+.results-breakdown {
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.results-list-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.results-list-heading h2 {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.total-votes {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.results-list {
+  display: grid;
+  gap: 18px;
+}
+
+.result-row {
+  display: grid;
+  gap: 10px;
+}
+
+.result-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.result-identity {
+  display: grid;
+  gap: 4px;
+}
+
+.result-identity strong {
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.result-identity span {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.result-count {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.result-progress {
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: #e7ebe6;
+}
+
+.result-progress::-webkit-progress-bar {
+  border-radius: 999px;
+  background: #e7ebe6;
+}
+
+.result-progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: var(--green);
+}
+
+.result-progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: var(--green);
+}
+
+.results-empty,
+.results-error {
+  padding: 20px;
+  border: 1px solid #e8c4bd;
+  border-radius: 12px;
+  background: #fff3f0;
+  color: #8e342c;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.results-footnote {
+  margin: 22px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .app-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .app-header .header-status {
+    order: 3;
+    flex: 1 1 auto;
+  }
+
+  .close-election-button,
+  .results-link,
+  .results-back-link,
+  .app-header #logout-form {
+    order: 2;
+  }
+
+  .election-closed-banner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .results-main {
+    width: min(calc(100% - 32px), 620px);
+  }
+
+  .results-state {
+    grid-template-columns: auto 1fr;
+  }
+
+  .results-state .button-secondary {
+    grid-column: 1 / -1;
+  }
+
+  .results-list-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 .toast-message {
   position: fixed;
   right: 20px;
@@ -1269,11 +1575,6 @@ input:focus-visible {
 
   .action-confirm {
     grid-column: 1 / -1;
-  }
-
-  .blank-vote-note {
-    margin: 0 15px 15px;
-    text-align: left;
   }
 
   .urna-topbar {

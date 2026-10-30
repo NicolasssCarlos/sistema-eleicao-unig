@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Resultado da votação | Eleição Universitária{% endblock %}
+{% block description %}Apuração e resultado final da eleição universitária simulada.{% endblock %}
+
+{% block content %}
+<div class="results-app" data-results-available="{{ 'true' if results_available else 'false' }}">
+  <header class="app-header">
+    <a class="brand-lockup brand-lockup-dark" href="{{ url_for('main.home') }}" aria-label="Eleição Universitária">
+      <span class="brand-mark" aria-hidden="true">V</span>
+      <span class="brand-name">ELEIÇÃO <strong>UNIVERSITÁRIA</strong><small>SIMULAÇÃO ACADÊMICA</small></span>
+    </a>
+    <div class="header-status"><span class="status-dot" aria-hidden="true"></span> Apuração</div>
+    <a class="logout-button results-back-link" href="{{ url_for('main.home') }}">Voltar à urna</a>
+  </header>
+
+  <main class="results-main">
+    <section class="results-hero" aria-labelledby="results-title">
+      <p class="eyebrow">ELEIÇÃO UNIVERSITÁRIA · RESULTADO FINAL</p>
+      <h1 id="results-title">Resultado da votação</h1>
+      <p>A apuração é liberada somente depois que a votação é encerrada.</p>
+    </section>
+
+    <section id="results-waiting" class="results-state" aria-labelledby="results-waiting-title" {% if results_available %}hidden{% endif %}>
+      <span class="results-state-index" aria-hidden="true">01</span>
+      <div>
+        <p class="eyebrow">VOTAÇÃO EM ANDAMENTO</p>
+        <h2 id="results-waiting-title">O resultado ainda não foi liberado.</h2>
+        <p id="results-waiting-copy">A apuração aparecerá depois que alguém encerrar a votação.</p>
+      </div>
+      <a class="button-secondary" href="{{ url_for('main.home') }}">Voltar à urna</a>
+    </section>
+
+    <section id="results-card" class="results-card" aria-live="polite" {% if not results_available %}hidden{% endif %}>
+      <div class="winner-panel">
+        <p class="winner-label">APURAÇÃO FINAL</p>
+        <p id="winner-status" class="winner-status">Calculando resultado...</p>
+        <h2 id="winner-name">Carregando</h2>
+        <p id="winner-meta" class="winner-meta"></p>
+      </div>
+      <div class="results-breakdown">
+        <div class="results-list-heading">
+          <div>
+            <p class="eyebrow">CONTAGEM</p>
+            <h2>Votos por candidatura</h2>
+          </div>
+          <p id="total-votes" class="total-votes" aria-live="polite"></p>
+        </div>
+        <div id="results-list" class="results-list"></div>
+      </div>
+    </section>
+
+    <p id="results-error" class="results-error" role="status" aria-live="polite" hidden></p>
+    <p class="results-footnote">Simulação acadêmica. Não é um sistema oficial de votação.</p>
+  </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/resultados.js') }}" defer></script>
+{% endblock %}
