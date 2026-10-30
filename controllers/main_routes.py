@@ -1,15 +1,66 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
+import hmac
+import secrets
+
+from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 
 from services.auth_service import cadastrar_usuarios, verificar_usuario
 
 
-from services.vote_service import listar_candidatos, buscar_candidato_por_numero, registrar_voto
-
-
-from services.vote_service import listar_candidatos, buscar_candidato_por_numero, registrar_voto, apurar_votos, fechar_eleicao, abrir_eleicao
+from services.vote_service import (
+    apurar_votos,
+    abrir_eleicao,
+    buscar_candidato_por_numero,
+    fechar_eleicao,
+    listar_candidatos,
+    registrar_voto,
+)
 
 
 main_bp = Blueprint('main', __name__)
+
+
+@main_bp.app_context_processor
+def inject_csrf_token():
+    def generate_csrf_token():
+        token = session.get("_csrf_token")
+        if not token:
+            token = secrets.token_urlsafe(32)
+            session["_csrf_token"] = token
+        return token
+
+    return {"csrf_token": generate_csrf_token}
+
+
+@main_bp.before_request
+def validate_csrf_token():
+    if request.method != "POST":
+        return None
+
+    expected_token = session.get("_csrf_token")
+    submitted_token = request.headers.get("X-CSRF-Token") or request.form.get("_csrf_token")
+    if not expected_token or not submitted_token or not hmac.compare_digest(expected_token, submitted_token):
+        return jsonify({"erro": "Sessão expirada. Atualize a página e tente novamente."}), 400
+
+    return None
+
+
+@main_bp.get("/")
+def home():
+    endpoint = "main.urna" if "matricula" in session else "main.login"
+    return redirect(url_for(endpoint))
+
+
+@main_bp.get("/urna")
+def urna():
+    if "matricula" not in session:
+        return redirect(url_for("main.login"))
+    return render_template("urna.html")
+
+
+@main_bp.post("/logout")
+def logout():
+    session.clear()
+    return jsonify({"sucesso": True})
 
 
 @main_bp.route('/login', methods = ['GET', 'POST'])
@@ -31,11 +82,16 @@ def login():
 
 
         if usuario:
+            session.clear()
             session['matricula'] = usuario['matricula'] # Guarda o aluno na sessão!
+            session['_csrf_token'] = secrets.token_urlsafe(32)
             return jsonify({"sucesso": True, "mensagem": "Login efetuado com sucesso!"}), 200
         else:
             return jsonify({"sucesso": False, "mensagem": "Matrícula ou senha incorretas"}), 401
 
+
+    if "matricula" in session:
+        return redirect(url_for("main.urna"))
 
     return render_template("login.html")
 
@@ -49,10 +105,18 @@ def cadastro():
     if request.method == "POST":
 
 
-        matricula = request.form.get("matricula")
+        matricula = (request.form.get("matricula") or "").strip()
 
 
-        senha = request.form.get("senha")
+        senha = request.form.get("senha") or ""
+        senha_confirmacao = request.form.get("confirmar_senha") or ""
+
+        if not matricula or not senha:
+            return "Preencha matrícula e senha.", 400
+        if len(senha) < 8:
+            return "A senha deve ter pelo menos 8 caracteres.", 400
+        if senha != senha_confirmacao:
+            return "As senhas não conferem.", 400
 
 
         sucesso = cadastrar_usuarios(matricula, senha)
@@ -67,7 +131,7 @@ def cadastro():
         else:
 
 
-            return "Erro ao cadastrar. Esta matricula ja pode estar registrada"
+            return "Não foi possível criar a conta. Verifique a matrícula e tente novamente.", 409
 
 
     return render_template("cadastro.html")    

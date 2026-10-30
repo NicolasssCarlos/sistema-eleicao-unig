@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Criar cadastro | Voto Acadêmico{% endblock %}
+{% block description %}Crie seu acesso à simulação acadêmica de votação.{% endblock %}
+
+{% block content %}
+<main class="auth-layout">
+  <section class="auth-story" aria-labelledby="signup-story-title">
+    <a class="brand-lockup" href="{{ url_for('main.home') }}" aria-label="Voto Acadêmico, início">
+      <span class="brand-mark" aria-hidden="true">V</span>
+      <span class="brand-name">VOTO <strong>ACADÊMICO</strong></span>
+    </a>
+
+    <div class="story-copy">
+      <p class="eyebrow eyebrow-light">SEU PRIMEIRO ACESSO</p>
+      <h1 id="signup-story-title">Participar<br><span>começa aqui.</span></h1>
+      <p>Crie seu acesso para conhecer o fluxo de votação da urna simulada.</p>
+    </div>
+
+    <div class="story-footer">
+      <span class="story-status"><span class="status-dot" aria-hidden="true"></span> AMBIENTE DE SIMULAÇÃO</span>
+      <p>Projeto acadêmico. Não é um sistema oficial da Justiça Eleitoral.</p>
+    </div>
+  </section>
+
+  <section class="auth-side" aria-labelledby="signup-title">
+    <div class="auth-card">
+      <div class="card-kicker"><span class="kicker-line" aria-hidden="true"></span> NOVO ELEITOR</div>
+      <h2 id="signup-title">Crie seu cadastro.</h2>
+      <p class="auth-intro">Use uma matrícula válida para continuar.</p>
+
+      <div id="signup-message" class="form-feedback" role="status" aria-live="polite" hidden></div>
+
+      <form id="signup-form" action="{{ url_for('main.cadastro') }}" method="post" novalidate>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <div class="field-group">
+          <label for="matricula">Matrícula</label>
+          <input id="matricula" name="matricula" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="32" placeholder="Digite sua matrícula" required>
+        </div>
+        <div class="field-group">
+          <label for="senha">Senha</label>
+          <input id="senha" name="senha" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Pelo menos 8 caracteres" required>
+          <span class="field-hint">Use no mínimo 8 caracteres.</span>
+        </div>
+        <div class="field-group">
+          <label for="confirmar-senha">Confirmar senha</label>
+          <input id="confirmar-senha" name="confirmar_senha" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Digite a senha novamente" required>
+        </div>
+        <button class="button-primary auth-submit" type="submit">
+          <span>Criar acesso</span>
+          <span class="button-arrow" aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <div class="auth-divider"><span>Já tem cadastro?</span></div>
+      <a class="button-secondary" href="{{ url_for('main.login') }}">Voltar para entrar</a>
+      <p class="auth-disclaimer">Simulação acadêmica: não utilize este projeto para uma eleição real.</p>
+    </div>
+    <p class="auth-side-note">A matrícula é usada para autenticar seu acesso à plataforma.</p>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
+{% endblock %}
